@@ -1,0 +1,156 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>상품 페이지</title>
+  <link rel="stylesheet" href="/css/home.css" type="text/css">
+  <link rel="stylesheet" href="/css/modal-form-style.css" type="text/css">
+</head>
+<body>
+<div class="page-header">
+  <h1 class="page-title">Manage <b>Products</b></h1>
+
+  <!--product create/delete button-->
+  <div class="top-action-buttons">
+    <button id="create-button" onclick="openModal('product-modal', '물품 등록 창')"
+            data-bs-target="#product-modal">
+      물품 등록
+    </button>
+    <button id="delete-button">선택 항목 삭제</button>
+  </div>
+</div>
+
+<div id="product-modal" class="product-modal">
+  <div class="product-modal-content">
+    <div class="product-modal-header">
+      <h5 class="product-modal-title">물품 등록</h5>
+      <button class="product-modal-close-button" onclick="closeModal()">✖</button>
+    </div>
+    <div class="product-modal-body">
+      <form id="create-form" th:action="@{/view/products}" th:object="${requestDto}" method="post">
+
+        <div class="form-group">
+          <label for="name">물품 이름</label>
+          <input id="name" type="text" th:field="*{name}" placeholder="물품 이름을 입력하세요">
+          <div class="error-message" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="price">가격</label>
+          <input id="price" type="number" th:field="*{price}" placeholder="가격을 입력하세요">
+          <div class="error-message" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="imageUrl">이미지 URL</label>
+          <input id="imageUrl" type="text" th:field="*{imageUrl}" placeholder="이미지 URL을 입력하세요">
+          <div class="error-message" th:if="${#fields.hasErrors('imageUrl')}" th:errors="*{imageUrl}"></div>
+        </div>
+
+        <button class="submit-button" type="submit">물품 등록</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div id="product-modal-2" class="product-modal">
+  <div class="product-modal-content">
+    <div class="product-modal-header">
+      <h5 class="product-modal-title">물품 수정</h5>
+      <button class="product-modal-close-button" onclick="closeModal()">✖</button>
+    </div>
+    <div class="product-modal-body">
+      <form id="update-form"
+            th:action="@{/view/products/update}"
+            th:object="${updateDto}"
+            method="post">
+
+        <div class="form-group">
+          <label for="name-2">물품 이름</label>
+          <input id="name-2" type="text" th:field="*{name}" placeholder="물품 이름을 입력하세요">
+          <div class="error-message" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="price-2">가격</label>
+          <input id="price-2" type="number" th:field="*{price}" placeholder="가격을 입력하세요">
+          <div class="error-message" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="imageUrl-2">이미지 URL</label>
+          <input id="imageUrl-2" type="text" th:field="*{imageUrl}" placeholder="이미지 URL을 입력하세요">
+          <div class="error-message" th:if="${#fields.hasErrors('imageUrl')}" th:errors="*{imageUrl}"></div>
+        </div>
+
+        <button class="submit-button" type="submit">물품 수정</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!--Product Table-->
+<table class="product-table">
+  <thead>
+  <tr>
+    <th th:text="선택"></th>
+    <th th:text="아이디"></th>
+    <th th:text="상품명"></th>
+    <th th:text="가격"></th>
+    <th th:text="이미지URL"></th>
+    <th th:text="수정"></th>
+    <th th:text="삭제"></th>
+  </tr>
+  </thead>
+
+  <tbody class="product-table-body" th:if="${productList == null or productList.isEmpty()}">
+  <tr>
+    <td colspan="7">등록된 상품이 없습니다.</td>
+  </tr>
+  </tbody>
+
+  <tbody class="product-table-body" th:if="${productList != null and !productList.isEmpty()}">
+  <tr th:each="product : ${productList}">
+    <td><input type="checkbox" name="selectedId" th:value="${product.id}"></td>
+    <td th:text="${product.id}"></td>
+    <td th:text="${product.name}"></td>
+    <td th:text="${product.price}"></td>
+    <td th:text="${product.imageUrl}"></td>
+    <td>
+      <button class="update-button">수정</button>
+    </td>
+    <td>
+      <button class="delete-button">삭제</button>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+<script src="/js/home.js"></script>
+<script th:inline="javascript">
+    const openCreateModalFlag = /*[[${openCreateModal}]]*/ false;
+    const openUpdateModalFlag = /*[[${openUpdateModal}]]*/ false;
+
+    if (openCreateModalFlag) {
+        const prevFormData = {
+            name:     /*[[${requestDto.name}]]*/ null,
+            price:    /*[[${requestDto.price}]]*/ null,
+            imageUrl: /*[[${requestDto.imageUrl}]]*/ null
+        };
+        openModal('product-modal', '물품 등록', prevFormData);
+    }
+
+    else if (openUpdateModalFlag) {
+        const prevUpdateData = {
+            id:       /*[[${productId}]]*/ null,
+            name:     /*[[${updateDto.name}]]*/ null,
+            price:    /*[[${updateDto.price}]]*/ null,
+            imageUrl: /*[[${updateDto.imageUrl}]]*/ null
+        };
+
+        openModal('product-modal-2', '물품 수정', prevUpdateData);
+    }
+</script>
+</body>
+</html>

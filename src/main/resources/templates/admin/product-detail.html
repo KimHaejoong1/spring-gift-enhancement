@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html th:replace="~{layout/layout :: layout('상품 상세 정보', ~{::#content}, 'admin-page')}">
+<div id="content">
+  <div class="product-detail">
+    <img th:src="${product.imageUrl}" alt="상품 이미지" width="200"/>
+    <p><strong>상품명:</strong> <span th:text="${product.name}"></span></p>
+    <p><strong>가격:</strong> <span th:text="${product.price}"></span>원</p>
+  </div>
+
+  <div class="buttons">
+    <a th:href="@{/admin/products/edit/{id}(id=${product.id})}" class="button">수정하기</a>
+    <a href="/admin/products" class="button">목록으로</a>
+  </div>
+</div>
+</html>

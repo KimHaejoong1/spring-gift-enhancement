@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html th:replace="~{layout/layout :: layout('내 위시리스트', ~{::#content}, null)}">
+<div id="content">
+  <div class="top-bar">
+    <div class="user-info">
+      <span th:text="${userEmail}">user@example.com</span>님, 환영합니다!
+    </div>
+    <a href="/members/products" class="button">상품 목록으로</a>
+    <a href="/members/logout" class="button">로그아웃</a>
+  </div>
+
+  <table>
+    <thead>
+    <tr>
+      <th>상품명</th>
+      <th>가격</th>
+      <th>이미지</th>
+      <th>관리</th>
+    </tr>
+    </thead>
+    <tbody id="wishlist-body">
+    </tbody>
+  </table>
+
+  <div class="pagination" th:if="${!wishlistPage.empty}">
+    <span th:if="${wishlistPage.hasPrevious()}">
+        <a th:href="@{/members/wishlist(page=${wishlistPage.number - 1})}">&laquo; 이전</a>
+    </span>
+    <span>페이지 <b th:text="${wishlistPage.number + 1}"></b> / <b
+        th:text="${wishlistPage.totalPages}"></b></span>
+    <span th:if="${wishlistPage.hasNext()}">
+        <a th:href="@{/members/wishlist(page=${wishlistPage.number + 1})}">다음 &raquo;</a>
+    </span>
+  </div>
+</div>
+</html>

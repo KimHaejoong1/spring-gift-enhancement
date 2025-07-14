@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <link rel="stylesheet" href="/css/style.css">
+  <meta charset="UTF-8">
+  <title>유저 관리자 페이지</title>
+  <style>
+    .error { color: red; }
+  </style>
+</head>
+<body>
+<h1>유저 관리자 페이지</h1>
+
+<div>
+  <h2>유저 목록</h2>
+  <br>
+  <a th:href="@{/admin/members/new}">
+    <button type="button">유저 생성</button>
+  </a>
+  <table border="1">
+    <thead>
+    <tr>
+      <th>Id</th>
+      <th>Name</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="member : ${memberList}">
+      <td th:text="${member.getId()}"></td>
+      <td th:text="${member.getEmail()}"></td>
+
+      <!-- 수정 버튼: 수정 페이지로 이동 -->
+      <td>
+        <form th:action="@{'/admin/members/update/' + ${member.getId()}}" method="get">
+          <button type="submit">수정</button>
+        </form>
+      </td>
+
+      <td>
+        <form th:action="@{'/admin/members/delete/' + ${member.getId()}}" method="post">
+          <button type="submit">삭제</button>
+        </form>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+</body>
+</html>

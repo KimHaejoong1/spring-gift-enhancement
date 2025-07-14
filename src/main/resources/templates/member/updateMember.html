@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <link rel="stylesheet" href="/css/style.css">
+  <meta charset="UTF-8">
+  <title>상품 수정</title>
+  <style>
+    .error { color: red; }
+  </style>
+</head>
+<body>
+<h2>유저 수정</h2>
+<form th:action="@{'/admin/members/update/' + *{id}}" th:object="${request}" method="post">
+  <label>Id: <input type="number" th:field="*{id}" readonly/></label><br>
+
+  <label>Email: <input type="text" th:field="*{email}" /></label>
+  <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error"></span><br>
+
+  <label>Password: <input type="password" th:field="*{password}" /></label>
+  <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error"></span>
+  <br>
+
+  <button type="submit">수정 완료</button>
+</form>
+
+<br>
+<a th:href="@{/admin/members}">
+  <button type="button">유저 목록으로 돌아가기</button>
+</a>
+</body>
+</html>

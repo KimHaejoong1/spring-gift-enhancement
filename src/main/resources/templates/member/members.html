@@ -1,0 +1,59 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <link href="../css/bootstrap.min.css"
+        th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+<body>
+
+<div class = "container" style="max-width: 600px">
+  <div class="py-4 text-center">
+    <h2>멤버 관리</h2>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <button class="btn btn-dark float-end" th:onclick="|location.href='@{/api/members/add}'|" type="button"> 멤버 등록</button>
+    </div>
+  </div>
+
+  <hr class="my-4">
+  <div>
+    <table class="table">
+      <thead>
+      <tr>
+        <th>id</th>
+        <th>email</th>
+        <th>password</th>
+        <th>수정</th>
+        <th>삭제</th>
+
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="member: ${members}">
+        <td th:text="${member.id}">id</td>
+        <td th:text="${member.email}">email</td>
+        <td th:text="${member.password}">password</td>
+        <td>
+          <form th:action="@{/api/members/{memberId}/edit(memberId=${member.id})}" method="get">
+            <button type="submit" class="btn btn-primary">수정</button>
+          </form>
+        </td>
+        <td>
+          <form th:action="@{/api/members/{memberId}/delete(memberId=${member.id})}" method="post">
+            <button type="submit" class="btn btn-danger">삭제</button>
+          </form>
+
+        </td>
+
+      </tr>
+      </tbody>
+    </table>
+
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <link  th:href="@{/css/bootstrap.min.css}"
+         href="../css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .container {
+      max-width: 560px;
+    }
+    .field-error {
+      border-color: #dc3545;
+      color: #dc3545;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="py-5 text-center">
+    <h2>멤버 등록</h2>
+  </div>
+
+  <h4 class="mb-3">멤버 입력</h4>
+
+  <form th:action th:object="${member}" method="post">
+    <div>
+      <label for="email">email</label>
+      <input type="text" id="email" th:field="*{email}" th:errorclass= "field-error" class="form-control" placeholder="email을 입력하세요">
+      <div class="field-error" th:errors="*{email}">email 오류</div>
+    </div>
+    <div>
+      <label for="price">password</label>
+      <input type="text" id="price" th:field="*{password}" th:errorclass="field-error" class = "form-control" placeholder="비밀번호를 입력하세요">
+      <div class="field-error" th:errors="*{password}">비밀번호 오류</div>
+    </div>
+
+    <hr class="my-4">
+
+    <div class="row">
+      <div class="col">
+        <button class = "w-100 btn btn-dark" type="submit">멤버 등록</button>
+      </div>
+      <div class="col">
+        <button class = "w-100 btn btn-secondary"
+                th:onclick="|location.href='@{/api/members}'|"
+                type="button">취소</button>
+      </div>
+    </div>
+
+
+  </form>
+</div>
+</body>
+</html>

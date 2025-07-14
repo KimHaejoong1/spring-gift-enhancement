@@ -1,1 +1,3 @@
-# spring-gift-enhancement
+# 미션 3. 상품 고도화 
+
+## 0단계 : 기본 코드 준비

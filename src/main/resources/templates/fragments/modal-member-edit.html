@@ -1,0 +1,18 @@
+<div th:fragment="editMemberModal" id="editMemberModal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <h3>회원 수정</h3>
+    <form th:action="@{/admin/members/__id__}" method="post" id="editMemberForm">
+      <input type="hidden" name="_method" value="put" />
+      <input type="hidden" name="id" id="editMemberId" />
+      <input type="email" name="email" id="editMemberEmail" placeholder="이메일" required />
+      <input type="password" name="password" id="editMemberPassword" placeholder="비밀번호" required />
+      <select name="role" id="editMemberRole" required>
+        <option value="">권한 선택</option>
+        <option value="USER">USER</option>
+        <option value="ADMIN">ADMIN</option>
+      </select>
+      <button type="submit">수정</button>
+      <button type="button" id="closeEditMemberModalBtn">닫기</button>
+    </form>
+  </div>
+</div>

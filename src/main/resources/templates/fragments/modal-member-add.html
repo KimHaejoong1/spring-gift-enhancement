@@ -1,0 +1,16 @@
+<div th:fragment="addMemberModal" id="addMemberModal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <h3>회원 추가</h3>
+    <form th:action="@{/api/admin/members}" method="post" id="addMemberForm">
+      <input type="email" name="email" placeholder="이메일" required />
+      <input type="password" name="password" placeholder="비밀번호" required />
+      <select name="role" required>
+        <option value="">권한 선택</option>
+        <option value="USER">USER</option>
+        <option value="ADMIN">ADMIN</option>
+      </select>
+      <button type="submit">추가</button>
+      <button type="button" id="closeAddMemberModalBtn">닫기</button>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>회원 목록</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="header">
+  <h2>회원 목록</h2>
+  <button type="button" id="openAddMemberModalBtn">회원 추가</button>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>회원 ID</th>
+      <th>이메일</th>
+      <th>권한</th>
+      <th>수정</th>
+      <th>삭제</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr th:each="member : ${members}">
+      <td th:text="${member.id}"></td>
+      <td th:text="${member.email}"></td>
+      <td th:text="${member.role}"></td>
+      <td>
+        <button type="button"
+                th:attr="
+                        data-id=${member.id},
+                        data-email=${member.email},
+                        data-role=${member.role}"
+                onclick="openEditMemberModal(this)">
+          수정
+        </button>
+      </td>
+      <td>
+        <button type="button" class="deleteMemberBtn" th:data-id="${member.id}">
+          삭제
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- 모달 추가 -->
+<div th:insert="~{fragments/modal-member-add :: addMemberModal}"></div> <!-- 회원 추가 모달 -->
+<div th:insert="~{fragments/modal-member-edit :: editMemberModal}"></div> <!-- 회원 수정 모달 -->
+<div th:insert="~{fragments/modal-member-delete :: deleteMemberModal}"></div> <!-- 회원 삭제 확인 모달 -->
+
+<!-- js 추가 -->
+<script th:src="@{/js/member-modal-handler.js}"></script>
+
+</body>
+</html>

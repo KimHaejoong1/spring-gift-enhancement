@@ -1,14 +1,32 @@
 package gift.entity;
 
+import jakarta.persistence.*;
+
 import java.math.BigInteger;
 
+@Entity
+@Table(name = "product")
 public class Product {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @Column(nullable = false, length = 15)
     private String name;
+
+    @Column(nullable = false)
     private BigInteger price;
+
+    @Column(nullable = false, name = "image_url")
     private String imageUrl;
 
     public Product() {}
+
+    public Product(String name, BigInteger price, String imageUrl) {
+        this.name = name;
+        this.price = price;
+        this.imageUrl = imageUrl;
+    }
 
     public Product(Integer id, String name, BigInteger price, String imageUrl) {
         this.id = id;

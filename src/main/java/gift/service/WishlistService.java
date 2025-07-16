@@ -5,7 +5,6 @@ import gift.dto.WishlistResponseDTO;
 import gift.entity.Member;
 import gift.entity.Product;
 import gift.entity.WishList;
-import gift.repository.ProductRepository;
 import gift.repository.WishlistRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,19 +17,19 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class WishlistService {
     private final WishlistRepository wishlistRepository;
-    private final ProductRepository productRepository;
     private final MemberService memberService;
+    private final ProductService productService;
 
-    public WishlistService(WishlistRepository wishlistRepository, ProductRepository productRepository, MemberService memberService) {
+    public WishlistService(WishlistRepository wishlistRepository, MemberService memberService, ProductService productService) {
         this.wishlistRepository = wishlistRepository;
-        this.productRepository = productRepository;
         this.memberService = memberService;
+        this.productService = productService;
     }
 
     @Transactional
     public WishlistResponseDTO addWishlist(Integer memberId, WishlistRequestDTO wishlistRequestDTO) {
         Member member = memberService.getMemberEntityById(memberId);
-        Product product = productRepository.findById(wishlistRequestDTO.productId());
+        Product product = productService.getEntityById(wishlistRequestDTO.productId());
 
         Optional<WishList> existing = wishlistRepository.findByMemberAndProduct(member, product);
 

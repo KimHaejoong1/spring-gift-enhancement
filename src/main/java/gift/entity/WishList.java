@@ -27,12 +27,6 @@ public class WishList {
         this.product = product;
         this.quantity = quantity;
     }
-    public WishList(Integer id, Member member, Product product, Integer quantity) {
-        this.id = id;
-        this.member = member;
-        this.product = product;
-        this.quantity = quantity;
-    }
 
     public Integer getId() {
         return id;

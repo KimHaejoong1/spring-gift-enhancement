@@ -68,10 +68,16 @@ public class ProductService {
 
     @Transactional
     public ProductResponseDTO update(Integer id, ProductRequestDTO productRequestDTO) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
+        if(!productRepository.existsById(id)) {
+            throw new IllegalArgumentException("상품을 찾을 수 없습니다.");
+        }
 
-        product.update(productRequestDTO.name(), productRequestDTO.price(), productRequestDTO.imageUrl());
+        Product product = new Product(
+                id,
+                productRequestDTO.name(),
+                productRequestDTO.price(),
+                productRequestDTO.imageUrl()
+        );
         Product updated = productRepository.save(product);
 
         return new ProductResponseDTO(

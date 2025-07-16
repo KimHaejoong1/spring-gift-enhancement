@@ -33,8 +33,8 @@ public class MemberService {
 
         String encodedPassword = passwordEncoder.encode(request.password());
 
-        Member member = new Member(0, request.email(), encodedPassword, request.role());
-        Member savedMember = memberRepository.register(member);
+        Member member = new Member(request.email(), encodedPassword, request.role());
+        Member savedMember = memberRepository.save(member);
 
         String token = jwtTokenProvider.generateJwtToken(savedMember);
 
@@ -66,7 +66,8 @@ public class MemberService {
     }
 
     public MemberResponseDTO getMemberById(Integer id) {
-        Member member = memberRepository.findById(id);
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
         return new MemberResponseDTO(
                 member.getId(),
@@ -76,7 +77,8 @@ public class MemberService {
     }
 
     public Member getMemberEntityById(Integer id) {
-        return memberRepository.findById(id);
+        return memberRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
     }
 
     public AuthenticatedMemberDTO getMemberByEmail(String email) {
@@ -95,6 +97,10 @@ public class MemberService {
 
     @Transactional
     public MemberResponseDTO update(Integer id, MemberRequestDTO request) {
+        if(!memberRepository.existsById(id)) {
+            throw new IllegalArgumentException("사용자를 찾을 수 없습니다.");
+        }
+
         String encodedPassword = passwordEncoder.encode(request.password());
 
         Member updated = new Member(
@@ -104,21 +110,20 @@ public class MemberService {
                 request.role()
         );
 
-        if (memberRepository.update(id, updated) == 0) {
-            throw new IllegalArgumentException("Member Not Found");
-        }
+        Member updatedMember = memberRepository.save(updated);
 
         return new MemberResponseDTO(
-                updated.getId(),
-                updated.getEmail(),
-                updated.getRole()
+                updatedMember.getId(),
+                updatedMember.getEmail(),
+                updatedMember.getRole()
         );
     }
 
     @Transactional
     public void delete(Integer id) {
-        if (memberRepository.delete(id) == 0) {
-            throw new IllegalArgumentException("Member Not Found");
+        if (!memberRepository.existsById(id)) {
+            throw new IllegalArgumentException("사용자를 찾을 수 없습니다.");
         }
+        memberRepository.deleteById(id);
     }
 }

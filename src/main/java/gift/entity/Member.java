@@ -21,6 +21,12 @@ public class Member {
 
     public Member() {}
 
+    public Member(String email, String password, Role role) {
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
+
     public Member(int id, String email, String password, Role role) {
         this.id = id;
         this.email = email;

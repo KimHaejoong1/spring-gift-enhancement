@@ -75,6 +75,10 @@ public class MemberService {
         );
     }
 
+    public Member getMemberEntityById(Integer id) {
+        return memberRepository.findById(id);
+    }
+
     public AuthenticatedMemberDTO getMemberByEmail(String email) {
         Member member = findByEmail(email);
         return new AuthenticatedMemberDTO(

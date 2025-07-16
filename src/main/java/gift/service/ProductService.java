@@ -42,6 +42,10 @@ public class ProductService {
         );
     }
 
+    public Product getProductEntityById(Integer id) {
+        return productRepository.findById(id);
+    }
+
     @Transactional
     public ProductResponseDTO create(ProductRequestDTO productRequestDTO) {
         Product product = new Product(

@@ -2,6 +2,7 @@ package gift.service;
 
 import gift.dto.WishlistRequestDTO;
 import gift.dto.WishlistResponseDTO;
+import gift.entity.Member;
 import gift.entity.Product;
 import gift.entity.WishList;
 import gift.repository.ProductRepository;
@@ -18,17 +19,20 @@ import java.util.stream.Collectors;
 public class WishlistService {
     private final WishlistRepository wishlistRepository;
     private final ProductRepository productRepository;
+    private final MemberService memberService;
 
-    public WishlistService(WishlistRepository wishlistRepository, ProductRepository productRepository) {
+    public WishlistService(WishlistRepository wishlistRepository, ProductRepository productRepository, MemberService memberService) {
         this.wishlistRepository = wishlistRepository;
         this.productRepository = productRepository;
+        this.memberService = memberService;
     }
 
     @Transactional
     public WishlistResponseDTO addWishlist(Integer memberId, WishlistRequestDTO wishlistRequestDTO) {
+        Member member = memberService.getMemberEntityById(memberId);
         Product product = productRepository.findById(wishlistRequestDTO.productId());
 
-        Optional<WishList> existing = wishlistRepository.findByMemberIdAndProductId(memberId, wishlistRequestDTO.productId());
+        Optional<WishList> existing = wishlistRepository.findByMemberAndProduct(member, product);
 
         if (existing.isPresent()) {
             WishList wishlist = existing.get();
@@ -36,7 +40,7 @@ public class WishlistService {
             return updateQuantity(wishlist.getId(), newQuantity, memberId);
         }
 
-        WishList wishlist = new WishList(null, memberId, wishlistRequestDTO.productId(), wishlistRequestDTO.quantity());
+        WishList wishlist = new WishList(member, product, wishlistRequestDTO.quantity());
         WishList saved = wishlistRepository.save(wishlist);
 
         return new WishlistResponseDTO(
@@ -50,20 +54,18 @@ public class WishlistService {
     }
 
     public List<WishlistResponseDTO> getAllWishlistByMemberId(Integer memberId) {
-        List<WishList> wishlists = wishlistRepository.findByMemberId(memberId);
+        Member member = memberService.getMemberEntityById(memberId);
+        List<WishList> wishlists = wishlistRepository.findByMember(member);
 
         return wishlists.stream()
-                .map(wishList -> {
-                    Product product = productRepository.findById(wishList.getProductId());
-                    return new WishlistResponseDTO(
+                .map(wishList -> new WishlistResponseDTO(
                         wishList.getId(),
-                        product.getId(),
-                        product.getName(),
-                        product.getPrice(),
-                        product.getImageUrl(),
+                        wishList.getProduct().getId(),
+                        wishList.getProduct().getName(),
+                        wishList.getProduct().getPrice(),
+                        wishList.getProduct().getImageUrl(),
                         wishList.getQuantity()
-                    );
-                })
+                ))
                 .collect(Collectors.toList());
     }
 
@@ -71,13 +73,13 @@ public class WishlistService {
     public WishlistResponseDTO updateQuantity(Integer wishlistId, Integer quantity, Integer memberId) {
         WishList wishlist = wishlistRepository.findById(wishlistId)
                         .orElseThrow(() -> new IllegalArgumentException("해당 위시리스트를 찾을 수 없습니다."));
-        if (!wishlist.getMemberId().equals(memberId)) {
+        if (!wishlist.getMember().getId().equals(memberId)) {
             throw new IllegalArgumentException("해당 위시리스트에 접근할 권한이 없습니다.");
         }
 
-        wishlistRepository.updateQuantity(wishlistId, quantity);
+        wishlist.setQuantity(quantity);
 
-        Product product = productRepository.findById(wishlist.getProductId());
+        Product product = wishlist.getProduct();
 
         return new WishlistResponseDTO(
                 wishlistId,
@@ -94,9 +96,9 @@ public class WishlistService {
         WishList wishlist = wishlistRepository.findById(wishlistId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 위시리스트를 찾을 수 없습니다."));
 
-        if (!wishlist.getMemberId().equals(memberId)) {
+        if (!wishlist.getMember().getId().equals(memberId)) {
             throw new IllegalArgumentException("해당 위시리스트에 접근할 권한이 없습니다.");
         }
-        wishlistRepository.deleteById(wishlistId);
+        wishlistRepository.delete(wishlist);
     }
 }

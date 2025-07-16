@@ -10,15 +10,14 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.math.BigInteger;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql(scripts = "/schema.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ProductControllerE2ETest {
     @Autowired
     private TestRestTemplate restTemplate;
@@ -73,7 +72,7 @@ public class ProductControllerE2ETest {
         restTemplate.postForEntity("/api/products", product1, ProductResponseDTO.class);
         restTemplate.postForEntity("/api/products", product2, ProductResponseDTO.class);
 
-        ResponseEntity<List> response = restTemplate.getForEntity("/api/products", List.class);
+        ResponseEntity<ProductResponseDTO[]> response = restTemplate.getForEntity("/api/products", ProductResponseDTO[].class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).hasSize(2);

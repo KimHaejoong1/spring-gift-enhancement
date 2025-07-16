@@ -32,7 +32,8 @@ public class ProductService {
     }
 
     public ProductResponseDTO getById(Integer id) {
-        Product product = productRepository.findById(id);
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("상품을 찾을 수 없습니다."));
 
         return new ProductResponseDTO(
                 product.getId(),
@@ -42,14 +43,14 @@ public class ProductService {
         );
     }
 
-    public Product getProductEntityById(Integer id) {
-        return productRepository.findById(id);
+    public Product getEntityById(Integer id) {
+        return productRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
     }
 
     @Transactional
     public ProductResponseDTO create(ProductRequestDTO productRequestDTO) {
         Product product = new Product(
-                null,
                 productRequestDTO.name(),
                 productRequestDTO.price(),
                 productRequestDTO.imageUrl()
@@ -58,7 +59,7 @@ public class ProductService {
         Product saved = productRepository.save(product);
 
         return new ProductResponseDTO(
-                null,
+                saved.getId(),
                 saved.getName(),
                 saved.getPrice(),
                 saved.getImageUrl()
@@ -67,16 +68,11 @@ public class ProductService {
 
     @Transactional
     public ProductResponseDTO update(Integer id, ProductRequestDTO productRequestDTO) {
-        Product updated = new Product(
-                id,
-                productRequestDTO.name(),
-                productRequestDTO.price(),
-                productRequestDTO.imageUrl()
-        );
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
 
-        if (productRepository.update(id, updated) == 0) {
-            throw new IllegalArgumentException("Product not found");
-        }
+        product.update(productRequestDTO.name(), productRequestDTO.price(), productRequestDTO.imageUrl());
+        Product updated = productRepository.save(product);
 
         return new ProductResponseDTO(
                 updated.getId(),
@@ -88,8 +84,9 @@ public class ProductService {
 
     @Transactional
     public void delete(Integer id) {
-        if (productRepository.delete(id) == 0) {
-            throw new IllegalArgumentException("Product not found");
+        if(!productRepository.existsById(id)) {
+            throw new IllegalArgumentException("상품을 찾을 수 없습니다.");
         }
+        productRepository.deleteById(id);
     }
 }

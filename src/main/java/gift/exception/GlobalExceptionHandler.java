@@ -32,6 +32,13 @@ public class GlobalExceptionHandler {
                 .body(e.getMessage());
     }
 
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<String> unauthorizedException(UnauthorizedException e) {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(e.getMessage());
+    }
+
     @ExceptionHandler(EmptyResultDataAccessException.class)
     public ResponseEntity<String> emptyResultDataAccessException(EmptyResultDataAccessException e) {
         return ResponseEntity

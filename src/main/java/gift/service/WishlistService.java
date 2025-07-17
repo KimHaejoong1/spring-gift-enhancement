@@ -76,7 +76,7 @@ public class WishlistService {
             throw new IllegalArgumentException("해당 위시리스트에 접근할 권한이 없습니다.");
         }
 
-        wishlist.setQuantity(quantity);
+        wishlist.updateQuantity(quantity);
 
         Product product = wishlist.getProduct();
 

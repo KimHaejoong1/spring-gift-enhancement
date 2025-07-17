@@ -41,7 +41,10 @@ public class WishList {
         return quantity;
     }
 
-    public void setQuantity(Integer quantity) {
+    public void updateQuantity(Integer quantity) {
+        if (quantity == null) {
+            throw new IllegalArgumentException("수량은 null일 수 없습니다.");
+        }
         this.quantity = quantity;
     }
 }

@@ -3,8 +3,8 @@ package gift.service;
 import gift.dto.ProductRequestDTO;
 import gift.dto.ProductResponseDTO;
 import gift.entity.Product;
+import gift.exception.ResourceNotFoundException;
 import gift.repository.ProductRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,7 +34,7 @@ public class ProductService {
 
     public ProductResponseDTO getById(Integer id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("상품을 찾을 수 없습니다."));
+                .orElseThrow(() -> new ResourceNotFoundException("상품을 찾을 수 없습니다."));
 
         return new ProductResponseDTO(
                 product.getId(),
@@ -46,7 +46,7 @@ public class ProductService {
 
     public Product getEntityById(Integer id) {
         return productRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("상품을 찾을 수 없습니다."));
+                .orElseThrow(() -> new ResourceNotFoundException("상품을 찾을 수 없습니다."));
     }
 
     @Transactional
@@ -70,7 +70,7 @@ public class ProductService {
     @Transactional
     public ProductResponseDTO update(Integer id, ProductRequestDTO productRequestDTO) {
         if(!productRepository.existsById(id)) {
-            throw new EntityNotFoundException("상품을 찾을 수 없습니다.");
+            throw new ResourceNotFoundException("상품을 찾을 수 없습니다.");
         }
 
         Product product = new Product(
@@ -92,7 +92,7 @@ public class ProductService {
     @Transactional
     public void delete(Integer id) {
         if(!productRepository.existsById(id)) {
-            throw new EntityNotFoundException("상품을 찾을 수 없습니다.");
+            throw new ResourceNotFoundException("상품을 찾을 수 없습니다.");
         }
         productRepository.deleteById(id);
     }

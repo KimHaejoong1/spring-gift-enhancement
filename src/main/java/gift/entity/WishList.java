@@ -1,30 +1,50 @@
 package gift.entity;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "wishlist")
 public class WishList {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private Integer memberId;
-    private Integer productId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
+
+    @Column(nullable = false)
     private Integer quantity;
 
-    public WishList() {}
+    protected WishList() {}
 
-    public WishList(Integer id, Integer memberId, Integer productId, Integer quantity) {
-        this.id = id;
-        this.memberId = memberId;
-        this.productId = productId;
+    public WishList(Member member, Product product, Integer quantity) {
+        this.member = member;
+        this.product = product;
         this.quantity = quantity;
     }
 
     public Integer getId() {
         return id;
     }
-    public Integer getMemberId() {
-        return memberId;
+    public Member getMember() {
+        return member;
     }
-    public Integer getProductId() {
-        return productId;
+    public Product getProduct() {
+        return product;
     }
     public Integer getQuantity() {
         return quantity;
+    }
+
+    public void updateQuantity(Integer quantity) {
+        if (quantity == null) {
+            throw new IllegalArgumentException("수량은 null일 수 없습니다.");
+        }
+        this.quantity = quantity;
     }
 }

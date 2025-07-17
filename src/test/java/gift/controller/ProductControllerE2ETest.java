@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.math.BigInteger;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -73,7 +72,7 @@ public class ProductControllerE2ETest {
         restTemplate.postForEntity("/api/products", product1, ProductResponseDTO.class);
         restTemplate.postForEntity("/api/products", product2, ProductResponseDTO.class);
 
-        ResponseEntity<List> response = restTemplate.getForEntity("/api/products", List.class);
+        ResponseEntity<ProductResponseDTO[]> response = restTemplate.getForEntity("/api/products", ProductResponseDTO[].class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).hasSize(2);

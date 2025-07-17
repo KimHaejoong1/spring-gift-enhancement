@@ -2,6 +2,7 @@ package gift.resolver;
 
 import gift.annotation.LoginMember;
 import gift.dto.AuthenticatedMemberDTO;
+import gift.exception.UnauthorizedException;
 import gift.security.JwtTokenProvider;
 import gift.service.MemberService;
 import org.springframework.core.MethodParameter;
@@ -30,7 +31,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     public AuthenticatedMemberDTO resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         String authHeader = webRequest.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new IllegalArgumentException("로그인이 필요합니다.");
+            throw new UnauthorizedException("로그인이 필요합니다.");
         }
 
         String token = authHeader.substring("Bearer ".length());

@@ -19,7 +19,7 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    public Member() {}
+    protected Member() {}
 
     public Member(String email, String password, Role role) {
         this.email = email;

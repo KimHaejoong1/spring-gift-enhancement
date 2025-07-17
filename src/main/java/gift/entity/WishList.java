@@ -20,7 +20,7 @@ public class WishList {
     @Column(nullable = false)
     private Integer quantity;
 
-    public WishList() {}
+    protected WishList() {}
 
     public WishList(Member member, Product product, Integer quantity) {
         this.member = member;

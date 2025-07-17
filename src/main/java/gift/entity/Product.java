@@ -20,7 +20,7 @@ public class Product {
     @Column(nullable = false, name = "image_url")
     private String imageUrl;
 
-    public Product() {}
+    protected Product() {}
 
     public Product(String name, BigInteger price, String imageUrl) {
         this.name = name;

@@ -18,7 +18,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr th:each="p: ${products}">
+    <tr th:each="p: ${products.content}">
         <td th:text="${p.id}">ID</td>
         <td th:text="${p.name}">상품명</td>
         <td th:text="${p.price}">가격</td>
@@ -34,6 +34,24 @@
     </tr>
     </tbody>
 </table>
+<div class="pagination" th:if="${products.totalPages > 1}">
+    <!-- 이전 페이지 -->
+    <a th:if="${products.hasPrevious()}"
+       th:href="@{/products(page=${products.number - 1}, size=${products.size})}">이전</a>
+
+    <!-- 페이지 번호들 -->
+    <span th:each="pageNum : ${#numbers.sequence(0, products.totalPages - 1)}">
+        <a th:if="${pageNum != products.number}"
+           th:href="@{/products(page=${pageNum}, size=${products.size})}"
+           th:text="${pageNum + 1}">1</a>
+        <strong th:if="${pageNum == products.number}"
+                th:text="${pageNum + 1}">1</strong>
+    </span>
+
+    <!-- 다음 페이지 -->
+    <a th:if="${products.hasNext()}"
+       th:href="@{/products(page=${products.number + 1}, size=${products.size})}">다음</a>
+</div>
 
 <div id="createModal" class="modal" style="display: none;">
     <form th:action="@{/products/create}" method="post">

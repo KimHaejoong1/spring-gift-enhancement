@@ -6,6 +6,8 @@ import gift.entity.Member;
 import gift.entity.Product;
 import gift.entity.WishList;
 import gift.repository.WishlistRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,6 +68,20 @@ public class WishlistService {
                         wishList.getQuantity()
                 ))
                 .collect(Collectors.toList());
+    }
+
+    public Page<WishlistResponseDTO> getWishlistByMemberId(Integer memberId, Pageable pageable) {
+        Member member = memberService.getMemberEntityById(memberId);
+        Page<WishList> wishlists = wishlistRepository.findByMember(member, pageable);
+
+        return wishlists.map(wishList -> new WishlistResponseDTO(
+                wishList.getId(),
+                wishList.getProduct().getId(),
+                wishList.getProduct().getName(),
+                wishList.getProduct().getPrice(),
+                wishList.getProduct().getImageUrl(),
+                wishList.getQuantity()
+        ));
     }
 
     @Transactional

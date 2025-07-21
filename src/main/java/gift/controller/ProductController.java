@@ -4,6 +4,9 @@ import gift.dto.ProductRequestDTO;
 import gift.dto.ProductResponseDTO;
 import gift.service.ProductService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +31,13 @@ public class ProductController {
     public ResponseEntity<ProductResponseDTO> getProductById(@PathVariable Integer id) {
         ProductResponseDTO product = productService.getById(id);
         return ResponseEntity.ok(product);
+    }
+
+    @GetMapping("/page")
+    public ResponseEntity<Page<ProductResponseDTO>> getProductsByPage(
+            @PageableDefault(page = 0, size = 10, sort = "id") Pageable pageable) {
+        Page<ProductResponseDTO> products = productService.getPage(pageable);
+        return ResponseEntity.ok(products);
     }
 
     @PostMapping

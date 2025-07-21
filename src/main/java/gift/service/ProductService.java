@@ -5,6 +5,8 @@ import gift.dto.ProductResponseDTO;
 import gift.entity.Product;
 import gift.exception.ResourceNotFoundException;
 import gift.repository.ProductRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +32,16 @@ public class ProductService {
                         product.getImageUrl()
                 ))
                 .collect(Collectors.toList());
+    }
+
+    public Page<ProductResponseDTO> getPage(Pageable pageable) {
+        Page<Product> products = productRepository.findAll(pageable);
+        return products.map(product -> new ProductResponseDTO(
+                product.getId(),
+                product.getName(),
+                product.getPrice(),
+                product.getImageUrl()
+        ));
     }
 
     public ProductResponseDTO getById(Integer id) {

@@ -8,6 +8,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -119,5 +123,63 @@ public class WishlistRepositoryTest {
 
         assertThat(found).isPresent();
         assertThat(found.get().getQuantity()).isEqualTo(4);
+    }
+
+    @Test
+    void pageable_findByMember_first_page() {
+        for (int i = 1; i <= 12; i++) {
+            Product extraProduct = new Product("상품" + i, BigInteger.valueOf(1000 * i), "https://example.com/" + i + ".jpg");
+            entityManager.persistAndFlush(extraProduct);
+
+            WishList wishlist = new WishList(member, extraProduct, i);
+            entityManager.persistAndFlush(wishlist);
+        }
+        Pageable pageable = PageRequest.of(0, 5, Sort.by("id"));
+
+        Page<WishList> result = wishlistRepository.findByMember(member, pageable);
+
+        assertThat(result.getContent()).hasSize(5);
+        assertThat(result.getTotalElements()).isEqualTo(12);
+        assertThat(result.getTotalPages()).isEqualTo(3);
+        assertThat(result.isFirst()).isTrue();
+        assertThat(result.isLast()).isFalse();
+    }
+
+    @Test
+    void pageable_findByMember_last_page() {
+        for (int i = 1; i <= 12; i++) {
+            Product extraProduct = new Product("상품" + i, BigInteger.valueOf(1000 * i), "https://example.com/" + i + ".jpg");
+            entityManager.persistAndFlush(extraProduct);
+
+            WishList wishlist = new WishList(member, extraProduct, i);
+            entityManager.persistAndFlush(wishlist);
+        }
+        Pageable pageable = PageRequest.of(2, 5);
+
+        Page<WishList> result = wishlistRepository.findByMember(member, pageable);
+
+        assertThat(result.getContent()).hasSize(2);
+        assertThat(result.getTotalElements()).isEqualTo(12);
+        assertThat(result.getTotalPages()).isEqualTo(3);
+        assertThat(result.isFirst()).isFalse();
+        assertThat(result.isLast()).isTrue();
+    }
+
+    @Test
+    void pageable_findByMember_empty_page() {
+        for (int i = 1; i <= 3; i++) {
+            Product extraProduct = new Product("상품" + i, BigInteger.valueOf(1000 * i), "https://example.com/" + i + ".jpg");
+            entityManager.persistAndFlush(extraProduct);
+
+            WishList wishlist = new WishList(member, extraProduct, i);
+            entityManager.persistAndFlush(wishlist);
+        }
+        Pageable pageable = PageRequest.of(1, 5);
+
+        Page<WishList> result = wishlistRepository.findByMember(member, pageable);
+
+        assertThat(result.getContent()).isEmpty();
+        assertThat(result.getTotalElements()).isEqualTo(3);
+        assertThat(result.getTotalPages()).isEqualTo(1);
     }
 }

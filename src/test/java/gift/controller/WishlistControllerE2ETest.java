@@ -115,4 +115,74 @@ public class WishlistControllerE2ETest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
+
+    @Test
+    void getWishlistsByPage_first_page() {
+        for (int i = 1; i <= 12; i++) {
+            ProductRequestDTO productRequest = new ProductRequestDTO("상품" + i, BigInteger.valueOf(1000 * i), "https://example.com/" + i + ".jpg");
+            ResponseEntity<ProductResponseDTO> productResponse = restTemplate.postForEntity("/api/products", productRequest, ProductResponseDTO.class);
+            Integer newProductId = productResponse.getBody().id();
+
+            WishlistRequestDTO wishlistRequest = new WishlistRequestDTO(newProductId, i);
+            HttpEntity<WishlistRequestDTO> httpEntity = new HttpEntity<>(wishlistRequest, createAuthHeaders());
+            restTemplate.exchange("/api/wishlist", HttpMethod.POST, httpEntity, WishlistResponseDTO.class);
+        }
+
+        String url = "/api/wishlist/page?page=0&size=5&sort=id";
+        HttpEntity<Void> httpEntity = new HttpEntity<>(createAuthHeaders());
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).contains("\"totalElements\":12");
+        assertThat(response.getBody()).contains("\"totalPages\":3");
+        assertThat(response.getBody()).contains("\"first\":true");
+        assertThat(response.getBody()).contains("\"last\":false");
+        assertThat(response.getBody()).contains("\"size\":5");
+    }
+
+    @Test
+    void getWishlistsByPage_last_page() {
+        for (int i = 1; i <= 12; i++) {
+            ProductRequestDTO productRequest = new ProductRequestDTO("상품" + i, BigInteger.valueOf(1000 * i), "https://example.com/" + i + ".jpg");
+            ResponseEntity<ProductResponseDTO> productResponse = restTemplate.postForEntity("/api/products", productRequest, ProductResponseDTO.class);
+            Integer newProductId = productResponse.getBody().id();
+
+            WishlistRequestDTO wishlistRequest = new WishlistRequestDTO(newProductId, i);
+            HttpEntity<WishlistRequestDTO> httpEntity = new HttpEntity<>(wishlistRequest, createAuthHeaders());
+            restTemplate.exchange("/api/wishlist", HttpMethod.POST, httpEntity, WishlistResponseDTO.class);
+        }
+
+        String url = "/api/wishlist/page?page=2&size=5&sort=id";
+        HttpEntity<Void> httpEntity = new HttpEntity<>(createAuthHeaders());
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).contains("\"totalElements\":12");
+        assertThat(response.getBody()).contains("\"totalPages\":3");
+        assertThat(response.getBody()).contains("\"first\":false");
+        assertThat(response.getBody()).contains("\"last\":true");
+        assertThat(response.getBody()).contains("\"numberOfElements\":2");
+    }
+
+    @Test
+    void getWishlistsByPage_empty_page() {
+        for (int i = 1; i <= 3; i++) {
+            ProductRequestDTO productRequest = new ProductRequestDTO("상품" + i, BigInteger.valueOf(1000 * i), "https://example.com/" + i + ".jpg");
+            ResponseEntity<ProductResponseDTO> productResponse = restTemplate.postForEntity("/api/products", productRequest, ProductResponseDTO.class);
+            Integer newProductId = productResponse.getBody().id();
+
+            WishlistRequestDTO wishlistRequest = new WishlistRequestDTO(newProductId, i);
+            HttpEntity<WishlistRequestDTO> httpEntity = new HttpEntity<>(wishlistRequest, createAuthHeaders());
+            restTemplate.exchange("/api/wishlist", HttpMethod.POST, httpEntity, WishlistResponseDTO.class);
+        }
+
+        String url = "/api/wishlist/page?page=1&size=5";
+        HttpEntity<Void> httpEntity = new HttpEntity<>(createAuthHeaders());
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).contains("\"content\":[]");
+        assertThat(response.getBody()).contains("\"totalElements\":3");
+        assertThat(response.getBody()).contains("\"totalPages\":1");
+    }
 }

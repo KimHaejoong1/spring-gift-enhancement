@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS wishlist;
+DROP TABLE IF EXISTS option;
 DROP TABLE IF EXISTS product;
 DROP TABLE IF EXISTS member;
 
@@ -24,4 +25,12 @@ CREATE TABLE wishlist (
     FOREIGN KEY (member_id) REFERENCES member(id),
     FOREIGN KEY (product_id) REFERENCES product(id),
     UNIQUE(member_id, product_id)
-)
+);
+
+CREATE TABLE option (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    quantity INTEGER NOT NULL,
+    product_id INTEGER,
+    FOREIGN KEY (product_id) REFERENCES product(id)
+);

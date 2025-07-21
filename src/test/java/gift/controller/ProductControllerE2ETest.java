@@ -172,4 +172,69 @@ public class ProductControllerE2ETest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
     }
+
+    @Test
+    void getProductsByPage_first_page() {
+        for (int i = 1; i <= 15; i++) {
+            ProductRequestDTO request = new ProductRequestDTO(
+                    "상품" + i,
+                    BigInteger.valueOf(1000 * i),
+                    "http://example.com/image" + i + ".jpg"
+            );
+            restTemplate.postForEntity("/api/products", request, ProductResponseDTO.class);
+        }
+
+        String url = "/api/products/page?page=0&size=10&sort=id";
+        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).contains("\"totalElements\":15");
+        assertThat(response.getBody()).contains("\"totalPages\":2");
+        assertThat(response.getBody()).contains("\"first\":true");
+        assertThat(response.getBody()).contains("\"last\":false");
+        assertThat(response.getBody()).contains("\"size\":10");
+    }
+
+    @Test
+    void getProductsByPage_last_page() {
+        for (int i = 1; i <= 15; i++) {
+            ProductRequestDTO request = new ProductRequestDTO(
+                    "상품" + i,
+                    BigInteger.valueOf(1000 * i),
+                    "http://example.com/image" + i + ".jpg"
+            );
+            restTemplate.postForEntity("/api/products", request, ProductResponseDTO.class);
+        }
+
+        String url = "/api/products/page?page=1&size=10&sort=id";
+        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).contains("\"totalElements\":15");
+        assertThat(response.getBody()).contains("\"totalPages\":2");
+        assertThat(response.getBody()).contains("\"first\":false");
+        assertThat(response.getBody()).contains("\"last\":true");
+        assertThat(response.getBody()).contains("\"numberOfElements\":5");
+    }
+
+    @Test
+    void getProductsByPage_empty_page() {
+        for (int i = 1; i <= 5; i++) {
+            ProductRequestDTO request = new ProductRequestDTO(
+                    "상품" + i,
+                    BigInteger.valueOf(1000 * i),
+                    "http://example.com/image" + i + ".jpg"
+            );
+            restTemplate.postForEntity("/api/products", request, ProductResponseDTO.class);
+        }
+
+        String url = "/api/products/page?page=2&size=10";
+        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).contains("\"content\":[]"); // 빈 배열
+        assertThat(response.getBody()).contains("\"totalElements\":5");
+        assertThat(response.getBody()).contains("\"totalPages\":1");
+    }
 }

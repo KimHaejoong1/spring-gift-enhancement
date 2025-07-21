@@ -5,6 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -82,5 +86,57 @@ public class ProductRepositoryTest {
 
         assertThat(productRepository.existsById(saved.getId())).isTrue();
         assertThat(productRepository.existsById(999)).isFalse();
+    }
+
+    @Test
+    void pageable_findAll_first_page() {
+        for (int i = 1; i <= 15; i++) {
+            Product product = new Product("상품" + i, BigInteger.valueOf(1000 * i), "https://example.com/image" + i + ".jpg");
+            entityManager.persistAndFlush(product);
+        }
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("id"));
+
+        Page<Product> result = productRepository.findAll(pageable);
+
+        assertThat(result.getContent()).hasSize(10);
+        assertThat(result.getTotalElements()).isEqualTo(15);
+        assertThat(result.getTotalPages()).isEqualTo(2);
+        assertThat(result.isFirst()).isTrue();
+        assertThat(result.isLast()).isFalse();
+    }
+
+    @Test
+    void pageable_findAll_last_page() {
+        for (int i = 1; i <= 15; i++) {
+            Product product = new Product("상품" + i, BigInteger.valueOf(1000 * i), "https://example.com/image" + i + ".jpg");
+            entityManager.persistAndFlush(product);
+        }
+        Pageable pageable = PageRequest.of(1, 10, Sort.by("id")); // 두 번째 페이지
+
+        Page<Product> result = productRepository.findAll(pageable);
+
+        assertThat(result.getContent()).hasSize(5);
+        assertThat(result.getTotalElements()).isEqualTo(15);
+        assertThat(result.getTotalPages()).isEqualTo(2);
+        assertThat(result.isFirst()).isFalse();
+        assertThat(result.isLast()).isTrue();
+        assertThat(result.hasPrevious()).isTrue();
+        assertThat(result.hasNext()).isFalse();
+    }
+
+    @Test
+    void pageable_findAll_empty_page() {
+        for (int i = 1; i <= 5; i++) {
+            Product product = new Product("상품" + i, BigInteger.valueOf(1000 * i), "https://example.com/image" + i + ".jpg");
+            entityManager.persistAndFlush(product);
+        }
+        Pageable pageable = PageRequest.of(2, 10);
+
+        Page<Product> result = productRepository.findAll(pageable);
+
+        assertThat(result.getContent()).isEmpty();
+        assertThat(result.getTotalElements()).isEqualTo(5);
+        assertThat(result.getTotalPages()).isEqualTo(1);
+        assertThat(result.getNumber()).isEqualTo(2);
     }
 }

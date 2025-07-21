@@ -3,6 +3,7 @@ package gift.entity;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "option")
 public class Option {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

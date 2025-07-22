@@ -58,4 +58,12 @@ public class Product {
     public List<Option> getOptions() {
         return options;
     }
+
+    public boolean hasOptionWithName(String name) {
+        return options != null &&
+                options.stream().anyMatch(option -> option
+                                .getName()
+                                .equals(name)
+                );
+    }
 }

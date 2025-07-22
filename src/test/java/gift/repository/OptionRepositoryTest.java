@@ -59,26 +59,4 @@ public class OptionRepositoryTest {
 
         assertThat(options).isEmpty();
     }
-
-    @Test
-    void existsByProductIdAndName_true() {
-        Product product = new Product("휠렛버거", BigInteger.valueOf(5000), "https://example.com/image.jpg");
-        Product savedProduct = entityManager.persistAndFlush(product);
-        Option option = new Option("기본옵션", 100, savedProduct);
-        entityManager.persistAndFlush(option);
-
-        boolean exists = optionRepository.existsByProductIdAndName(savedProduct.getId(), "기본옵션");
-
-        assertThat(exists).isTrue();
-    }
-
-    @Test
-    void existsByProductIdAndName_false() {
-        Product product = new Product("휠렛버거", BigInteger.valueOf(5000), "https://example.com/image.jpg");
-        Product savedProduct = entityManager.persistAndFlush(product);
-
-        boolean exists = optionRepository.existsByProductIdAndName(savedProduct.getId(), "없는옵션");
-
-        assertThat(exists).isFalse();
-    }
 }

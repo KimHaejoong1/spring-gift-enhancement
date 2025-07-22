@@ -39,7 +39,7 @@ public class OptionService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
 
-        if (optionRepository.existsByProductIdAndName(productId, optionRequestDTO.name())) {
+        if (product.hasOptionWithName(optionRequestDTO.name())) {
             throw new IllegalArgumentException("동일한 상품 내에 중복된 옵션명이 존재합니다.");
         }
 

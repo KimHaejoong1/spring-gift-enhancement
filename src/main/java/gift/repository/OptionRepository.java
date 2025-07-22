@@ -7,5 +7,4 @@ import java.util.List;
 
 public interface OptionRepository extends JpaRepository<Option, Integer> {
     List<Option> findByProductId(Integer productId);
-    boolean existsByProductIdAndName(Integer productId, String name);
 }

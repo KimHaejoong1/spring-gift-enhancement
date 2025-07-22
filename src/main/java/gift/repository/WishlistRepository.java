@@ -14,6 +14,7 @@ import java.util.Optional;
 
 @Repository
 public interface WishlistRepository extends JpaRepository<WishList, Integer> {
+    @EntityGraph(attributePaths = {"product"})
     List<WishList> findByMember(Member member);
     @EntityGraph(attributePaths = {"product"})
     Page<WishList> findByMember(Member member, Pageable pageable);
